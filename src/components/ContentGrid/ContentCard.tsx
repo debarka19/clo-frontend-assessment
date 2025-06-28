@@ -19,7 +19,7 @@ const ContentCard: React.FC<Props> = ({ content }) => {
         <p className="user">@{content.creator}</p>
         <p className="price">
           {content.pricingOption === 0 && content.price != null
-            ? `₹${content.price}`
+            ? `$${content.price}`
             : content.pricingOption === 1 ? 'Free' : 'View only'}
         </p>
       </div>

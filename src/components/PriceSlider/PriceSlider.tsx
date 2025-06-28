@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import './PriceSlider.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../redux/store';
+import { AppDispatch, RootState } from '../../redux/store';
 import { setPriceRange } from '../../redux/filtersSlice';
-import { resetContents } from '../../redux/contentsSlice';
+import { fetchContents } from '../../redux/contentsSlice';
 
 const PriceSlider: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { pricing, priceRange } = useSelector((state: RootState) => state.filters);
   const isPaidSelected = pricing.includes(0);
 
@@ -14,16 +14,15 @@ const PriceSlider: React.FC = () => {
   const [maxVal, setMaxVal] = useState(priceRange[1]);
 
   useEffect(() => {
-    // Update global state on drag stop
     dispatch(setPriceRange([minVal, maxVal]));
-    dispatch(resetContents());
+    dispatch(fetchContents());
   }, [minVal, maxVal]);
 
   if (!isPaidSelected) return null;
 
   return (
     <div className="price-slider">
-      <label className="slider-label">Price Range: ₹{minVal} - ₹{maxVal}</label>
+      <label className="slider-label">Price Range: ${minVal} - ${maxVal}</label>
       <div className="slider-container">
         <input
           type="range"

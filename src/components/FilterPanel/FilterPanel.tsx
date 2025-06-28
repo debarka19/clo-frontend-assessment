@@ -8,13 +8,13 @@ import {
   PricingType,
   PricingOption
 } from '../../redux/filtersSlice';
-import { RootState } from '../../redux/store';
-import { resetContents } from '../../redux/contentsSlice';
+import { AppDispatch, RootState } from '../../redux/store';
+import { fetchContents } from '../../redux/contentsSlice';
 
 const PRICING_OPTIONS: PricingType[] = [0,1,2];
 
 const FilterPanel: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const filters = useSelector((state: RootState) => state.filters);
 
   const [localKeyword, setLocalKeyword] = useState(filters.keyword);
@@ -23,7 +23,7 @@ const FilterPanel: React.FC = () => {
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
       dispatch(setKeyword(localKeyword));
-      dispatch(resetContents());
+      dispatch(fetchContents());
     }, 300);
     return () => clearTimeout(delayDebounce);
   }, [localKeyword]);
@@ -37,14 +37,14 @@ const FilterPanel: React.FC = () => {
     }
     setSelected(updated);
     dispatch(setPricing(updated));
-    dispatch(resetContents());
+    dispatch(fetchContents());
   };
 
   const handleReset = () => {
     setSelected([]);
     setLocalKeyword('');
     dispatch(resetFilters());
-    dispatch(resetContents());
+    dispatch(fetchContents());
   };
 
   return (
@@ -59,7 +59,7 @@ const FilterPanel: React.FC = () => {
                 checked={selected.includes(option)}
                 onChange={() => toggleOption(option)}
               />
-              {option}
+              {option ===PricingOption.PAID ? "Paid": option ===PricingOption.FREE ?"Free": "View only" }
             </label>
           ))}
         </div>

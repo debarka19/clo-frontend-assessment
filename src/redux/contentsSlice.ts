@@ -30,19 +30,20 @@ const initialState: ContentsState = {
   error: null,
 };
 
-// Async thunk to fetch data (infinite scroll)
+
 export const fetchContents = createAsyncThunk<
   ContentItem[],
   void,
   { state: RootState }
 >('contents/fetchContents', async (_, { getState, rejectWithValue }) => {
   try {
+    console.log("called_times")
     const { contents, filters } = getState();
 
     const response = await axios.get<ContentItem[]>(API_URL);
     let data = response.data;
 
-    // 🔍 Keyword Filter
+ 
     if (filters.keyword.trim()) {
       const keyword = filters.keyword.toLowerCase();
       data = data.filter(
@@ -50,16 +51,18 @@ export const fetchContents = createAsyncThunk<
           item.title.toLowerCase().includes(keyword) ||
           item.creator.toLowerCase().includes(keyword)
       );
+      
     }
 
-    // 💲 Pricing Filter
+    
     if (filters.pricing.length > 0) {
       data = data.filter((item) =>
         filters.pricing.includes(item.pricingOption)
       );
+      
     }
 
-    // 💰 Price Range Filter
+  
     if (filters.pricing.includes(0)) {
       data = data.filter((item) => {
         if (item.pricingOption !== 0) return true;
@@ -68,9 +71,10 @@ export const fetchContents = createAsyncThunk<
           item.price! <= filters.priceRange[1]
         );
       });
+     
     }
 
-    // ↕️ Sorting
+   
     if (filters.sortBy === 'Item Name') {
       data.sort((a, b) => a.title.localeCompare(b.title));
     } else if (filters.sortBy === 'Higher Price') {
@@ -78,8 +82,7 @@ export const fetchContents = createAsyncThunk<
     } else if (filters.sortBy === 'Lower Price') {
       data.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
     }
-
-    // 📄 Pagination logic (simulate infinite scroll)
+    
     const perPage = 12;
     const start = (contents.page - 1) * perPage;
     const end = start + perPage;
@@ -110,7 +113,7 @@ const contentsSlice = createSlice({
         fetchContents.fulfilled,
         (state, action: PayloadAction<ContentItem[]>) => {
           state.loading = false;
-          state.items = [...state.items, ...action.payload];
+          state.items = [ ...action?.payload];
           state.hasMore = action.payload.length > 0;
         }
       )
