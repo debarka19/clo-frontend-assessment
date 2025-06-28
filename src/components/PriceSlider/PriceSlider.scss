@@ -1,0 +1,38 @@
+.price-slider {
+    margin-bottom: 20px;
+  
+    .slider-label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+  
+    .slider-container {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+  
+      input[type='range'] {
+        flex: 1;
+        -webkit-appearance: none;
+        height: 6px;
+        background: #ccc;
+        border-radius: 5px;
+        outline: none;
+        cursor: pointer;
+      }
+  
+      input[type='range']::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #007aff;
+        cursor: pointer;
+        border: none;
+      }
+    }
+  }
+  
