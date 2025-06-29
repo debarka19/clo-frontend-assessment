@@ -11,6 +11,7 @@ import {
 import { AppDispatch, RootState } from '../../redux/storeTypes';
 import { resetContents, loadNextPage } from '../../redux/contentsSlice';
 import useDebounce from '../../hooks/useDebounce';
+import PriceSlider from '../PriceSlider/PriceSlider';
 
 const PRICING_OPTIONS: PricingType[] = [0, 1, 2];
 
@@ -84,6 +85,7 @@ const FilterPanel: React.FC = () => {
               : 'View only'}
           </label>
         ))}
+        <PriceSlider/>
       </div>
       <button className="reset-button" onClick={handleReset}>
       Reset
