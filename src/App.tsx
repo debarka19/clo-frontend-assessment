@@ -9,8 +9,10 @@ import ContentGrid from './components/ContentGrid/ContentGrid';
 const App: React.FC = () => {
   return (
     <div className="app-container">
-      <h1 className="title">CLO-SET CONNECT Store</h1>
-
+      <header className="header-head">
+      <h1 className="title">CONNECT</h1>
+      </header>
+      <div className="body-rest">
       <div className="sidebar-panel">
         <FilterPanel />
         <PriceSlider />
@@ -18,6 +20,7 @@ const App: React.FC = () => {
       </div>
 
       <ContentGrid />
+      </div>
     </div>
   );
 };

@@ -18,23 +18,32 @@
     }
   
     .card-body {
-      padding: 10px 14px;
+      display:flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 10px;
   
       .title {
         font-size: 16px;
         font-weight: 600;
-        margin-bottom: 4px;
+        text-align: start;
+        margin-bottom: 0px;
+        color: #000;
       }
   
       .user {
         font-size: 14px;
         color: #555;
-        margin-bottom: 6px;
+        margin-block-start:0px;
+        margin-block-end: 0px;
       }
   
       .price {
         font-weight: 700;
         color: #007aff;
+        text-align: end;
+        margin-block-start:0px;
+        margin-block-end: 0px;
       }
     }
   }

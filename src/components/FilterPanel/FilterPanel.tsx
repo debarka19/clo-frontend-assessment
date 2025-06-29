@@ -50,42 +50,47 @@ const FilterPanel: React.FC = () => {
   };
 
   return (
+    <>
     <div className="filter-panel">
       <div className="filter-section">
-        <label className="filter-label">Pricing Options:</label>
-        <div className="checkbox-group">
-          {PRICING_OPTIONS.map((option) => (
-            <label key={option} className="checkbox-label">
-              <input
-                type="checkbox"
-                checked={selected.includes(option)}
-                onChange={() => toggleOption(option)}
-              />
-              {option === PricingOption.PAID
-                ? 'Paid'
-                : option === PricingOption.FREE
-                ? 'Free'
-                : 'View only'}
-            </label>
-          ))}
-        </div>
-      </div>
-
-      <div className="filter-section">
-        <label className="filter-label">Search by Keyword:</label>
-        <input
-          type="text"
-          placeholder="e.g., Anisha"
-          value={localKeyword}
-          onChange={(e) => setLocalKeyword(e.target.value)}
-          className="search-input"
-        />
-      </div>
-
-      <button className="reset-button" onClick={handleReset}>
-        Reset Filters
-      </button>
+  <div className="search-input-wrapper">
+    <input
+      type="text"
+      placeholder="Find the items you're looking for"
+      value={localKeyword}
+      onChange={(e) => setLocalKeyword(e.target.value)}
+      className="search-input"
+    />
+    <span className="search-icon">🔍</span>
+  </div>
+</div>
     </div>
+    <div className="filter-panel">
+    <div className="filter-section">
+      
+      <div className="checkbox-group">
+      <label className="filter-label">Pricing Options:</label>
+        {PRICING_OPTIONS.map((option) => (
+          <label key={option} className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={selected.includes(option)}
+              onChange={() => toggleOption(option)}
+            />
+            {option === PricingOption.PAID
+              ? 'Paid'
+              : option === PricingOption.FREE
+              ? 'Free'
+              : 'View only'}
+          </label>
+        ))}
+      </div>
+      <button className="reset-button" onClick={handleReset}>
+      Reset
+    </button>
+    </div>
+  </div>
+  </>
   );
 };
 

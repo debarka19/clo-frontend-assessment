@@ -15,8 +15,10 @@ const ContentCard: React.FC<Props> = ({ content }) => {
         }} />
       </div>
       <div className="card-body">
+        <div>
         <h3 className="title">{content.title}</h3>
         <p className="user">@{content.creator}</p>
+        </div>
         <p className="price">
           {content.pricingOption === 0 && content.price != null
             ? `$${content.price}`

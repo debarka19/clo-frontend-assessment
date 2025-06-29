@@ -8,7 +8,10 @@
   }
   
   .filter-section {
-    margin-bottom: 15px;
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
   }
   
   .filter-label {
@@ -53,4 +56,24 @@
   .reset-button:hover {
     background: #e74c3c;
   }
+  .search-input-wrapper {
+    position: relative;
+    width: 100%;
   
+    .search-input {
+      width: 98%;
+      padding-left: 10px;
+      height: 36px;
+      font-size: 14px;
+    }
+  
+    .search-icon {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      font-size: 16px;
+      color: #999;
+    }
+  }

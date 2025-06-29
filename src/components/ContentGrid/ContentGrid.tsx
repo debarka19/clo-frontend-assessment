@@ -43,12 +43,16 @@ const ContentGrid: React.FC = () => {
 
   return (
     <div className="content-grid">
-      {items.map((item, idx) => (
-        <div key={item.id + '_' + idx} className="card-wrapper">
-          <ContentCard content={item} />
-        </div>
-      ))}
-
+      {items.length > 0 ? (
+        items.map((item, idx) => (
+          <div key={item.id + '_' + idx} className="card-wrapper">
+            <ContentCard content={item} />
+          </div>
+        ))
+      ) : !loading ? (
+        <div className="no-items-message">No items found.</div>
+      ) : null}
+  
       {loading &&
         Array.from({ length: 8 }).map((_, i) => (
           <div key={i} className="card-wrapper">
