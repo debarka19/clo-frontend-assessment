@@ -37,13 +37,13 @@ export const fetchContents = createAsyncThunk<
   { state: RootState }
 >('contents/fetchContents', async (_, { getState, rejectWithValue }) => {
   try {
-    console.log("called_times")
+
     const { contents, filters } = getState();
 
     const response = await axios.get<ContentItem[]>(API_URL);
     let data = response.data;
 
- 
+
     if (filters.keyword.trim()) {
       const keyword = filters.keyword.toLowerCase();
       data = data.filter(

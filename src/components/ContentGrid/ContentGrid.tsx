@@ -40,7 +40,7 @@ const ContentGrid: React.FC = () => {
         return (
           <div
             key={item.id+"_"+idx}
-            ref={isLast ? lastCardRef : undefined}
+            //ref={isLast ? lastCardRef : undefined}
             className="card-wrapper"
           >
             <ContentCard content={item} />

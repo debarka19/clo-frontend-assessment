@@ -10,6 +10,7 @@ import {
 } from '../../redux/filtersSlice';
 import { AppDispatch, RootState } from '../../redux/store';
 import { fetchContents } from '../../redux/contentsSlice';
+import useDebounce from '../../hooks/useDebounce';
 
 const PRICING_OPTIONS: PricingType[] = [0,1,2];
 
@@ -19,14 +20,12 @@ const FilterPanel: React.FC = () => {
 
   const [localKeyword, setLocalKeyword] = useState(filters.keyword);
   const [selected, setSelected] = useState<PricingType[]>(filters.pricing);
-
+  const debouncedKeyword = useDebounce(localKeyword, 300);
+  
   useEffect(() => {
-    const delayDebounce = setTimeout(() => {
-      dispatch(setKeyword(localKeyword));
-      dispatch(fetchContents());
-    }, 300);
-    return () => clearTimeout(delayDebounce);
-  }, [localKeyword]);
+    dispatch(setKeyword(debouncedKeyword));
+    dispatch(fetchContents());
+  }, [debouncedKeyword]);
 
   const toggleOption = (option: PricingType) => {
     let updated: PricingType[];
