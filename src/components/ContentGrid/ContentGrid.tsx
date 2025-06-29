@@ -1,52 +1,53 @@
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import './ContentGrid.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../redux/store';
-import { fetchContents, incrementPage } from '../../redux/contentsSlice';
+import { RootState, AppDispatch } from '../../redux/storeTypes';
+import { fetchContents, loadNextPage, resetContents } from '../../redux/contentsSlice';
 import ContentCard from './ContentCard';
 import SkeletonCard from './SkeletonCard';
-import { AppDispatch } from '../../redux/store';
 
 const ContentGrid: React.FC = () => {
-  
   const dispatch = useDispatch<AppDispatch>();
-  const { items, loading, hasMore, page } = useSelector((state: RootState) => state.contents);
+  const { items, loading, hasMore, fullData, page } = useSelector((state: RootState) => state.contents);
+  const filters = useSelector((state: RootState) => state.filters);
 
-  const observer = useRef<IntersectionObserver | null>(null);
-  const lastCardRef = useCallback(
-    (node: HTMLDivElement | null) => {
-      if (loading) return;
-      if (observer.current) observer.current.disconnect();
+  const handleScroll = useCallback(() => {
+    const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight;
+    const clientHeight = document.documentElement.clientHeight;
 
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore) {
-          dispatch(incrementPage());
-        }
-      });
-
-      if (node) observer.current.observe(node);
-    },
-    [loading, hasMore, dispatch]
-  );
+    if (!loading && hasMore && scrollTop + clientHeight >= scrollHeight - 20) {
+      dispatch(loadNextPage());
+    }
+  }, [dispatch, loading, hasMore]);
 
   useEffect(() => {
-    dispatch(fetchContents());
-  }, [page]);
+    if (fullData.length === 0) {
+      dispatch(fetchContents()).then(() => {
+        dispatch(loadNextPage());
+      });
+    }
+  }, [dispatch, fullData.length]);
+
+  useEffect(() => {
+    if (fullData.length > 0) {
+      dispatch(resetContents());
+      dispatch(loadNextPage());
+    }
+  }, [filters, dispatch]);
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [handleScroll]);
 
   return (
     <div className="content-grid">
-      {items.map((item, idx) => {
-        const isLast = idx === items.length - 1;
-        return (
-          <div
-            key={item.id+"_"+idx}
-            //ref={isLast ? lastCardRef : undefined}
-            className="card-wrapper"
-          >
-            <ContentCard content={item} />
-          </div>
-        );
-      })}
+      {items.map((item, idx) => (
+        <div key={item.id + '_' + idx} className="card-wrapper">
+          <ContentCard content={item} />
+        </div>
+      ))}
 
       {loading &&
         Array.from({ length: 8 }).map((_, i) => (

@@ -1,20 +1,21 @@
 import React from 'react';
 import './SortDropdown.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../redux/store';
+import { AppDispatch, RootState } from '../../redux/storeTypes';
 import { setSortBy } from '../../redux/filtersSlice';
-import { fetchContents } from '../../redux/contentsSlice';
+import { resetContents, loadNextPage } from '../../redux/contentsSlice';
 
 const sortOptions = ['Item Name', 'Higher Price', 'Lower Price'] as const;
 
 const SortDropdown: React.FC = () => {
-  const dispatch =useDispatch<AppDispatch>();
+  const dispatch = useDispatch<AppDispatch>();
   const selectedSort = useSelector((state: RootState) => state.filters.sortBy);
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value as typeof sortOptions[number];
     dispatch(setSortBy(value));
-    dispatch(fetchContents()); 
+    dispatch(resetContents());
+    dispatch(loadNextPage());
   };
 
   return (

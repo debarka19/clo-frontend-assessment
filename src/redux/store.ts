@@ -8,6 +8,3 @@ export const store = configureStore({
     contents: contentsReducer,
   },
 });
-
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;

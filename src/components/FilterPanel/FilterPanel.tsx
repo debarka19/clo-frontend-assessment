@@ -6,13 +6,13 @@ import {
   setKeyword,
   resetFilters,
   PricingType,
-  PricingOption
+  PricingOption,
 } from '../../redux/filtersSlice';
-import { AppDispatch, RootState } from '../../redux/store';
-import { fetchContents } from '../../redux/contentsSlice';
+import { AppDispatch, RootState } from '../../redux/storeTypes';
+import { resetContents, loadNextPage } from '../../redux/contentsSlice';
 import useDebounce from '../../hooks/useDebounce';
 
-const PRICING_OPTIONS: PricingType[] = [0,1,2];
+const PRICING_OPTIONS: PricingType[] = [0, 1, 2];
 
 const FilterPanel: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -21,11 +21,12 @@ const FilterPanel: React.FC = () => {
   const [localKeyword, setLocalKeyword] = useState(filters.keyword);
   const [selected, setSelected] = useState<PricingType[]>(filters.pricing);
   const debouncedKeyword = useDebounce(localKeyword, 300);
-  
+
   useEffect(() => {
     dispatch(setKeyword(debouncedKeyword));
-    dispatch(fetchContents());
-  }, [debouncedKeyword]);
+    dispatch(resetContents());
+    dispatch(loadNextPage());
+  }, [debouncedKeyword, dispatch]);
 
   const toggleOption = (option: PricingType) => {
     let updated: PricingType[];
@@ -36,14 +37,16 @@ const FilterPanel: React.FC = () => {
     }
     setSelected(updated);
     dispatch(setPricing(updated));
-    dispatch(fetchContents());
+    dispatch(resetContents());
+    dispatch(loadNextPage());
   };
 
   const handleReset = () => {
     setSelected([]);
     setLocalKeyword('');
     dispatch(resetFilters());
-    dispatch(fetchContents());
+    dispatch(resetContents());
+    dispatch(loadNextPage());
   };
 
   return (
@@ -58,7 +61,11 @@ const FilterPanel: React.FC = () => {
                 checked={selected.includes(option)}
                 onChange={() => toggleOption(option)}
               />
-              {option ===PricingOption.PAID ? "Paid": option ===PricingOption.FREE ?"Free": "View only" }
+              {option === PricingOption.PAID
+                ? 'Paid'
+                : option === PricingOption.FREE
+                ? 'Free'
+                : 'View only'}
             </label>
           ))}
         </div>

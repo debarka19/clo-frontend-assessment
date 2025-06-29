@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import './PriceSlider.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../redux/store';
+import { AppDispatch, RootState } from '../../redux/storeTypes';
 import { setPriceRange } from '../../redux/filtersSlice';
-import { fetchContents } from '../../redux/contentsSlice';
+import { resetContents, loadNextPage } from '../../redux/contentsSlice';
 
 const PriceSlider: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -13,10 +13,16 @@ const PriceSlider: React.FC = () => {
   const [minVal, setMinVal] = useState(priceRange[0]);
   const [maxVal, setMaxVal] = useState(priceRange[1]);
 
+   useEffect(() => {
+    setMinVal(priceRange[0]);
+    setMaxVal(priceRange[1]);
+  }, [priceRange]);
+
   useEffect(() => {
     dispatch(setPriceRange([minVal, maxVal]));
-    dispatch(fetchContents());
-  }, [minVal, maxVal]);
+    dispatch(resetContents());
+    dispatch(loadNextPage());
+  }, [minVal, maxVal, dispatch]);
 
   if (!isPaidSelected) return null;
 

@@ -1,9 +1,10 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { RootState } from './store';
+import { RootState } from './storeTypes';
 import { PricingType } from './filtersSlice';
 
 const API_URL = 'https://closet-recruiting-api.azurewebsites.net/api/data';
+const PER_PAGE = 12;
 
 export interface ContentItem {
   id: string;
@@ -15,7 +16,8 @@ export interface ContentItem {
 }
 
 interface ContentsState {
-  items: ContentItem[];
+  fullData: ContentItem[];    
+  items: ContentItem[];       
   page: number;
   loading: boolean;
   hasMore: boolean;
@@ -23,6 +25,7 @@ interface ContentsState {
 }
 
 const initialState: ContentsState = {
+  fullData: [],
   items: [],
   page: 1,
   loading: false,
@@ -30,68 +33,75 @@ const initialState: ContentsState = {
   error: null,
 };
 
+const applyFiltersAndSort = (
+  data: ContentItem[],
+  filters: RootState['filters']
+): ContentItem[] => {
+  let filtered = [...data];
+
+  if (filters.keyword.trim()) {
+    const keyword = filters.keyword.toLowerCase();
+    filtered = filtered.filter(
+      (item) =>
+        item.title.toLowerCase().includes(keyword) ||
+        item.creator.toLowerCase().includes(keyword)
+    );
+  }
+
+  if (filters.pricing.length > 0) {
+    filtered = filtered.filter((item) =>
+      filters.pricing.includes(item.pricingOption)
+    );
+  }
+
+  if (filters.pricing.includes(0)) {
+    filtered = filtered.filter((item) => {
+      if (item.pricingOption !== 0) return true;
+      return (
+        item.price! >= filters.priceRange[0] &&
+        item.price! <= filters.priceRange[1]
+      );
+    });
+  }
+
+  if (filters.sortBy === 'Item Name') {
+    filtered.sort((a, b) => a.title.localeCompare(b.title));
+  } else if (filters.sortBy === 'Higher Price') {
+    filtered.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
+  } else if (filters.sortBy === 'Lower Price') {
+    filtered.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
+  }
+
+  return filtered;
+};
 
 export const fetchContents = createAsyncThunk<
   ContentItem[],
   void,
   { state: RootState }
->('contents/fetchContents', async (_, { getState, rejectWithValue }) => {
+>('contents/fetchContents', async (_, { rejectWithValue }) => {
   try {
-
-    const { contents, filters } = getState();
-
     const response = await axios.get<ContentItem[]>(API_URL);
-    let data = response.data;
-
-
-    if (filters.keyword.trim()) {
-      const keyword = filters.keyword.toLowerCase();
-      data = data.filter(
-        (item) =>
-          item.title.toLowerCase().includes(keyword) ||
-          item.creator.toLowerCase().includes(keyword)
-      );
-      
-    }
-
-    
-    if (filters.pricing.length > 0) {
-      data = data.filter((item) =>
-        filters.pricing.includes(item.pricingOption)
-      );
-      
-    }
-
-  
-    if (filters.pricing.includes(0)) {
-      data = data.filter((item) => {
-        if (item.pricingOption !== 0) return true;
-        return (
-          item.price! >= filters.priceRange[0] &&
-          item.price! <= filters.priceRange[1]
-        );
-      });
-     
-    }
-
-   
-    if (filters.sortBy === 'Item Name') {
-      data.sort((a, b) => a.title.localeCompare(b.title));
-    } else if (filters.sortBy === 'Higher Price') {
-      data.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
-    } else if (filters.sortBy === 'Lower Price') {
-      data.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
-    }
-    
-    const perPage = 12;
-    const start = (contents.page - 1) * perPage;
-    const end = start + perPage;
-    const paginatedData = data.slice(start, end);
-
-    return paginatedData;
+    return response.data;
   } catch (error: any) {
     return rejectWithValue(error.message);
   }
+});
+
+export const loadNextPage = createAsyncThunk<
+  ContentItem[],
+  void,
+  { state: RootState }
+>('contents/loadNextPage', async (_, { getState }) => {
+  const state = getState();
+  const { fullData, page } = state.contents;
+  const filters = state.filters;
+
+  const allFiltered = applyFiltersAndSort(fullData, filters);
+  const start = (page - 1) * PER_PAGE;
+  const end = start + PER_PAGE;
+
+  return allFiltered.slice(start, end);
 });
 
 const contentsSlice = createSlice({
@@ -99,9 +109,6 @@ const contentsSlice = createSlice({
   initialState,
   reducers: {
     resetContents: () => initialState,
-    incrementPage: (state) => {
-      state.page += 1;
-    },
   },
   extraReducers: (builder) => {
     builder
@@ -109,25 +116,29 @@ const contentsSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(
-        fetchContents.fulfilled,
-        (state, action: PayloadAction<ContentItem[]>) => {
-          state.loading = false;
-          state.items = [ ...action?.payload];
-          state.hasMore = action.payload.length > 0;
-        }
-      )
+      .addCase(fetchContents.fulfilled, (state, action) => {
+        state.loading = false;
+        state.fullData = action.payload;
+        state.page = 1;
+        state.items = [];
+        state.hasMore = true;
+      })
       .addCase(fetchContents.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+      .addCase(loadNextPage.fulfilled, (state, action) => {
+        if (state.page === 1) {
+          state.items = action.payload;
+        } else {
+          state.items = [...state.items, ...action.payload];
+        }
+
+        state.page += 1;
+        state.hasMore = action.payload.length === PER_PAGE;
       });
   },
 });
 
-export const { resetContents, incrementPage } = contentsSlice.actions;
-
+export const { resetContents } = contentsSlice.actions;
 export default contentsSlice.reducer;
-
-
-
-
