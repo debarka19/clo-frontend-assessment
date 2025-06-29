@@ -28,8 +28,10 @@ const PriceSlider: React.FC = () => {
 
   return (
     <div className="price-slider">
-      <label className="slider-label">Price Range: ${minVal} - ${maxVal}</label>
+     
       <div className="slider-container">
+      
+      <label className="slider-label">${minVal}</label>
         <input
           type="range"
           min="0"
@@ -50,6 +52,7 @@ const PriceSlider: React.FC = () => {
             setMaxVal(value);
           }}
         />
+        <label className="slider-label">${maxVal}</label>
       </div>
     </div>
   );
