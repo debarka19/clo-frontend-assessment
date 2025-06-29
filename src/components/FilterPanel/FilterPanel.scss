@@ -20,6 +20,7 @@
   }
 }
 
+
 .filter-label {
   font-weight: 600;
 }
@@ -29,10 +30,18 @@
   flex-wrap: nowrap;
   gap: 15px;
   align-items: center;
+  width: 85%;
 
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: flex-start;
+    width: 100%;
+  }
+}
+
+.priceslider-container{
+  width: 40%;
+  @media (max-width: 768px) {    
     width: 100%;
   }
 }

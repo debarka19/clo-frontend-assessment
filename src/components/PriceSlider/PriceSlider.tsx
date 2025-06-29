@@ -13,11 +13,6 @@ const PriceSlider: React.FC = () => {
   const [minVal, setMinVal] = useState(priceRange[0]);
   const [maxVal, setMaxVal] = useState(priceRange[1]);
 
-   useEffect(() => {
-    setMinVal(priceRange[0]);
-    setMaxVal(priceRange[1]);
-  }, [priceRange]);
-
   useEffect(() => {
     dispatch(setPriceRange([minVal, maxVal]));
     dispatch(resetContents());
@@ -28,32 +23,45 @@ const PriceSlider: React.FC = () => {
 
   return (
     <div className="price-slider">
-     
-      <div className="slider-container">
+      <label className="slider-label">
+       ${minVal}
+      </label>
+      <div className="slider-wrapper">
       
-      <label className="slider-label">${minVal}</label>
+        <div className="slider-track" />
+        <div
+          className="slider-range"
+          style={{
+            left: `${(minVal / 999) * 100}%`,
+            width: `${((maxVal - minVal) / 999) * 100}%`,
+          }}
+        />
+        
         <input
           type="range"
           min="0"
           max="999"
           value={minVal}
-          onChange={(e) => {
-            const value = Math.min(Number(e.target.value), maxVal - 1);
-            setMinVal(value);
-          }}
+          onChange={(e) =>
+            setMinVal(Math.min(Number(e.target.value), maxVal - 1))
+          }
+          className="thumb thumb-left"
         />
         <input
           type="range"
           min="0"
           max="999"
           value={maxVal}
-          onChange={(e) => {
-            const value = Math.max(Number(e.target.value), minVal + 1);
-            setMaxVal(value);
-          }}
+          onChange={(e) =>
+            setMaxVal(Math.max(Number(e.target.value), minVal + 1))
+          }
+          className="thumb thumb-right"
         />
-        <label className="slider-label">${maxVal}</label>
+        
       </div>
+      <label className="slider-label">
+        ${maxVal}
+      </label>
     </div>
   );
 };

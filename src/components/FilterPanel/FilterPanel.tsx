@@ -85,7 +85,9 @@ const FilterPanel: React.FC = () => {
               : 'View only'}
           </label>
         ))}
+        <div className="priceslider-container">
         <PriceSlider/>
+        </div>
       </div>
       <button className="reset-button" onClick={handleReset}>
       Reset
