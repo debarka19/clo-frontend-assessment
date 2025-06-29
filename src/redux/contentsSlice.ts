@@ -28,7 +28,7 @@ const initialState: ContentsState = {
   fullData: [],
   items: [],
   page: 1,
-  loading: false,
+  loading: true,
   hasMore: true,
   error: null,
 };

@@ -9,7 +9,6 @@ const api = axios.create({
   },
 });
 
-// Fetch all content data
 export const fetchContentsAPI = async () => {
   const response = await api.get('/data');
   return response.data;
